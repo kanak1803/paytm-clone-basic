@@ -49,13 +49,14 @@ const userLogin = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
-
+    
     const checkedPassword = await bcrypt.compare(password, user.password);
     if (!checkedPassword) {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
     const userId = user._id;
     const token = generateJWtToken(userId);
+    console.log(token);
     res
       .status(200)
       .json({ message: "Login succesfully", user: user, jwtToken: token });
@@ -64,4 +65,4 @@ const userLogin = async (req, res) => {
   }
 };
 
-module.exports = {userRegister,userLogin};
+module.exports = { userRegister, userLogin };
