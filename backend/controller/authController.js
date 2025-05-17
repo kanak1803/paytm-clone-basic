@@ -1,4 +1,7 @@
-const { registerUserSchema } = require("../validators/userValidator");
+const {
+  registerUserSchema,
+  loginUserSchema,
+} = require("../validators/userValidator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const generateJWtToken = require("../utils/jwtTokenGenretor");
@@ -35,4 +38,30 @@ const userRegister = async (req, res) => {
   }
 };
 
-module.exports = userRegister;
+const userLogin = async (req, res) => {
+  const zodValidation = loginUserSchema.safeParse(req.body);
+  if (!zodValidation.success) {
+    return res.status(400).json({ errors: validation.error.errors });
+  }
+  const { username, password } = zodValidation.data;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    const checkedPassword = await bcrypt.compare(password, user.password);
+    if (!checkedPassword) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+    const userId = user._id;
+    const token = generateJWtToken(userId);
+    res
+      .status(200)
+      .json({ message: "Login succesfully", user: user, jwtToken: token });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+module.exports = {userRegister,userLogin};
