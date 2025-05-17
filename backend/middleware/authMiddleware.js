@@ -3,8 +3,9 @@ const jwt = require("jsonwebtoken");
 const checkAuth = async (req, res, next) => {
   let token;
   const authHeader = req.headers.authorization;
+
   if (authHeader && authHeader.startsWith("Bearer")) {
-    token = authHeader.split("", [1]);
+    token = authHeader.split(" ")[1];
   }
 
   if (!token) {
@@ -13,7 +14,9 @@ const checkAuth = async (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decodedToken.userId;
+    console.log(decodedToken);
+
+    req.userId = decodedToken.id;
 
     next();
   } catch (error) {

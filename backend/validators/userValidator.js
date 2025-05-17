@@ -12,4 +12,10 @@ const loginUserSchema = z.object({
   password: z.string(),
 });
 
-module.exports = { registerUserSchema, loginUserSchema };
+const updateProfileSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional(),
+});
+
+module.exports = { registerUserSchema, loginUserSchema, updateProfileSchema };
